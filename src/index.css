@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s ease;
+}
+
+/* Hide Spline badge */
+div[style*="spline-badge"], .spline-badge, [class*="spline-badge"] {
+  display: none !important;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Scroll-to-top button styles */
+.scroll-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 50;
+  background: linear-gradient(90deg, #06b6d4 0%, #3b82f6 100%);
+  color: white;
+  border-radius: 9999px;
+  box-shadow: 0 4px 24px 0 rgba(59, 130, 246, 0.15);
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.85;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.scroll-to-top:hover {
+  opacity: 1;
+  transform: scale(1.08);
+}
