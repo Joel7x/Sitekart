@@ -23,7 +23,7 @@ app.post('/api/contact', async (req, res) => {
     }
 
     // Instead of inserting into Supabase, just log the data
-    console.log('Contact submission:', { name, email, phone, businessType, requirements, created_at: new Date().toISOString() });
+    console.log('Contact submission:', { name, email, phone, businessType, requirements });
 
     res.status(200).json({ success: true, message: 'Form submitted successfully!' });
   } catch (error) {

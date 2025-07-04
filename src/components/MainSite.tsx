@@ -45,22 +45,6 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Toast, ToastType } from '@/components/ui/toast';
 import sitekartLogo from '../assets/sitekart-logo.png';
 
-function DigitalClock() {
-  const [now, setNow] = React.useState(new Date());
-  React.useEffect(() => {
-    const interval = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(interval);
-  }, []);
-  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  const date = now.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' });
-  return (
-    <div className="bg-black/60 text-white px-4 py-2 rounded-xl shadow-lg text-xs sm:text-sm font-mono flex flex-col items-start border border-white/10 backdrop-blur-md">
-      <span>{time}</span>
-      <span className="text-[10px] sm:text-xs text-gray-300">{date}</span>
-    </div>
-  );
-}
-
 export function MainSite() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('Home');
@@ -347,7 +331,6 @@ export function MainSite() {
   return (
     <div className="min-h-screen bg-white text-black dark:bg-black dark:text-white">
       <div className="w-full flex items-center justify-between px-6 pt-6 z-[9999]">
-        <DigitalClock />
         <div className="flex-1 flex justify-center">
           <AnimeNavBar 
             items={navItems} 
