@@ -44,7 +44,22 @@ import { motion, useInView } from 'framer-motion';
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Toast, ToastType } from '@/components/ui/toast';
 import sitekartLogo from '../assets/sitekart-logo.png';
-import { AnimatedDock } from "./ui/animated-dock";
+
+function DigitalClock() {
+  const [now, setNow] = React.useState(new Date());
+  React.useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const date = now.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' });
+  return (
+    <div className="bg-black/60 text-white px-4 py-2 rounded-xl shadow-lg text-xs sm:text-sm font-mono flex flex-col items-start border border-white/10 backdrop-blur-md">
+      <span>{time}</span>
+      <span className="text-[10px] sm:text-xs text-gray-300">{date}</span>
+    </div>
+  );
+}
 
 export function MainSite() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -282,16 +297,28 @@ export function MainSite() {
     }
   };
 
-  // Custom hook for scroll-triggered animations
-  const AnimatedSection = ({ children, variants = slideInFromBottom, className = "" }: any) => {
+  // 1. Section fade-in animation variants
+  const sectionVariants = {
+    hidden: { opacity: 0, y: 40 },
+    visible: { opacity: 1, y: 0, transition: { duration: 1.4, ease: 'easeOut' } },
+  };
+
+  const AnimatedSection = ({ children, variants = sectionVariants, className = "" }: any) => {
     const ref = React.useRef(null);
+    const [hasAnimated, setHasAnimated] = React.useState(false);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+    React.useEffect(() => {
+      if (isInView && !hasAnimated) {
+        setHasAnimated(true);
+      }
+    }, [isInView, hasAnimated]);
 
     return (
       <motion.div
         ref={ref}
         initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
+        animate={hasAnimated ? "visible" : "hidden"}
         variants={variants}
         className={className}
       >
@@ -308,12 +335,6 @@ export function MainSite() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // 1. Section fade-in animation variants
-  const sectionVariants = {
-    hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: 'easeOut' } },
-  };
-
   // 4. Show toast on form submit
   // useEffect(() => {
   //   if (!submitMessage) return;
@@ -325,12 +346,16 @@ export function MainSite() {
 
   return (
     <div className="min-h-screen bg-white text-black dark:bg-black dark:text-white">
-      {/* Modern Anime Navigation */}
-      <AnimeNavBar 
-        items={navItems} 
-        defaultActive={activeSection}
-        onItemClick={handleNavItemClick}
-      />
+      <div className="w-full flex items-center justify-between px-6 pt-6 z-[9999]">
+        <DigitalClock />
+        <div className="flex-1 flex justify-center">
+          <AnimeNavBar 
+            items={navItems} 
+            defaultActive={activeSection}
+            onItemClick={handleNavItemClick}
+          />
+        </div>
+      </div>
 
       {/* Hero Section with ChromeGrid Background */}
       <motion.section id="home" className="h-screen w-screen relative overflow-hidden" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={sectionVariants}>
@@ -434,44 +459,21 @@ export function MainSite() {
         <div className="absolute top-1/2 right-0 w-64 h-64 bg-gradient-to-tr from-pink-400/20 via-purple-400/20 to-blue-400/20 rounded-full blur-2xl z-0" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <AnimatedSection variants={slideInFromLeft} className="space-y-6">
-              <div className="space-y-4">
-                {/* Gradient Heading with Icon and Accent Underline */}
-                <div className="relative inline-block mb-2">
-                  <span className="inline-flex items-center gap-2">
-                    <Globe className="w-7 h-7 text-blue-400 drop-shadow-md" />
-                    <motion.h2 
-                      initial={{ opacity: 0, y: 30 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6 }}
-                      viewport={{ once: true }}
-                      className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg"
-                    >
-                      About SiteKart
-                    </motion.h2>
-                  </span>
-                  {/* Gradient Underline Accent */}
-                  <div className="absolute left-0 right-0 -bottom-1 h-1 bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 rounded-full blur-sm opacity-80" />
-                </div>
-                <motion.p 
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  viewport={{ once: true }}
-                  className="text-xl text-gray-300 leading-relaxed"
-                >
-                  We're a passionate team of web developers and designers specializing in creating 
-                  stunning, functional websites for businesses that matter to communities.
-                </motion.p>
+            <div className="space-y-6">
+              <div className="relative inline-block mb-2">
+                <span className="inline-flex items-center gap-2">
+                  <Globe className="w-7 h-7 text-blue-400 drop-shadow-md" />
+                  <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg">
+                    About SiteKart
+                  </h2>
+                </span>
+                <div className="absolute left-0 right-0 -bottom-1 h-1 bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 rounded-full blur-sm opacity-80" />
               </div>
-
-              <motion.div 
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                viewport={{ once: true }}
-                className="space-y-4"
-              >
+              <p className="text-xl text-gray-300 leading-relaxed">
+                We're a passionate team of web developers and designers specializing in creating 
+                stunning, functional websites for businesses that matter to communities.
+              </p>
+              <div className="space-y-4">
                 <p className="text-gray-400 leading-relaxed">
                   Our mission is simple: to help real-world businesses thrive in the digital space. 
                   Whether you're running a cozy restaurant, managing a busy office, or leading a growing organization, 
@@ -482,15 +484,8 @@ export function MainSite() {
                   digital experiences that not only look beautiful but also drive real results. We don't just 
                   build websites – we build digital foundations for your business growth.
                 </p>
-              </motion.div>
-
-              <motion.div 
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-                viewport={{ once: true }}
-                className="grid grid-cols-1 gap-6 pt-6"
-              >
+              </div>
+              <div className="grid grid-cols-1 gap-6 pt-6">
                 <div className="text-center">
                   <div className="w-12 h-12 bg-green-900/50 border border-green-500/30 rounded-lg flex items-center justify-center mx-auto mb-2">
                     <Coffee className="w-6 h-6 text-green-400" />
@@ -498,18 +493,16 @@ export function MainSite() {
                   <div className="text-2xl font-bold text-white">24/7</div>
                   <div className="text-sm text-gray-400">Support Available</div>
                 </div>
-              </motion.div>
-            </AnimatedSection>
-
-            <AnimatedSection variants={slideInFromRight} className="relative">
+              </div>
+            </div>
+            <div className="flex justify-center items-center">
               <img
                 src={sitekartLogo}
                 alt="SiteKart Logo"
                 className="rounded-2xl shadow-xl border border-gray-700 bg-white object-contain p-8"
                 style={{ maxHeight: '320px', maxWidth: '100%' }}
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-2xl"></div>
-            </AnimatedSection>
+            </div>
           </div>
         </div>
       </motion.section>
@@ -524,7 +517,7 @@ export function MainSite() {
                 <motion.h2 
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6 }}
+                  transition={{ duration: 1.2 }}
                   viewport={{ once: true }}
                   className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg"
                 >
@@ -536,7 +529,7 @@ export function MainSite() {
             <motion.p 
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ duration: 1.2, delay: 0.4 }}
               viewport={{ once: true }}
               className="text-xl text-gray-300 max-w-3xl mx-auto"
             >
@@ -584,7 +577,7 @@ export function MainSite() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <AnimatedSection className="text-center mb-16">
+          <div className="text-center mb-16">
             <div className="inline-flex items-center space-x-2 bg-blue-900/30 border border-blue-500/30 px-4 py-2 rounded-full mb-6">
               <Linkedin className="w-5 h-5 text-blue-400" />
               <span className="text-blue-300 font-medium">Professional Profile</span>
@@ -595,11 +588,11 @@ export function MainSite() {
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               The creative mind behind SiteKart, bringing innovative web solutions to life
             </p>
-          </AnimatedSection>
+          </div>
 
           <div className="grid lg:grid-cols-3 gap-12 items-start">
             {/* Profile Card */}
-            <AnimatedSection variants={slideInFromLeft} className="lg:col-span-1">
+            <div className="lg:col-span-1">
               <div className="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
                 {/* Decorative Elements */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-full blur-3xl"></div>
@@ -630,10 +623,10 @@ export function MainSite() {
                   </a>
                 </div>
               </div>
-            </AnimatedSection>
+            </div>
 
             {/* Professional Details */}
-            <AnimatedSection variants={slideInFromRight} className="lg:col-span-2 space-y-8">
+            <div className="lg:col-span-2 space-y-8">
               {/* About */}
               <div className="bg-gray-800 border border-gray-700 rounded-xl p-8">
                 <div className="flex items-center space-x-3 mb-6">
@@ -744,7 +737,7 @@ export function MainSite() {
                   </button>
                 </div>
               </div>
-            </AnimatedSection>
+            </div>
           </div>
         </div>
       </section>
@@ -752,7 +745,8 @@ export function MainSite() {
       {/* Contact Section */}
       <section id="contact" className="py-20 bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <AnimatedSection className="text-center mb-16">
+          {/* Static Heading to prevent flicker */}
+          <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
               Let's Start Your Project
             </h2>
@@ -760,7 +754,7 @@ export function MainSite() {
               Ready to transform your digital presence? Get in touch with us and let's discuss 
               how we can help your business grow online.
             </p>
-          </AnimatedSection>
+          </div>
 
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Form */}
@@ -974,14 +968,14 @@ export function MainSite() {
         <div className="max-w-5xl mx-auto flex flex-col items-center justify-center gap-8 relative">
           {/* Brand & Dock Row */}
           <div className="w-full flex flex-row items-center gap-6">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-xl animate-pulse-slow">
+            <a href="#home" className="flex items-center gap-3 group cursor-pointer">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-xl">
                 <Globe className="w-7 h-7 text-white drop-shadow-lg" />
               </div>
               <span className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-blue-200 to-cyan-200 bg-clip-text text-transparent drop-shadow-lg">
                 SiteKart
               </span>
-            </div>
+            </a>
             {/* Spacer to push icons to the far right */}
             <div className="flex-1 hidden md:block" />
             <div className="flex flex-row gap-4 items-center">
