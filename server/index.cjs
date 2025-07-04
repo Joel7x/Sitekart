@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -9,11 +8,6 @@ const PORT = process.env.PORT || 3001;
 // Middleware
 app.use(cors());
 app.use(express.json());
-
-// Add Supabase client
-const SUPABASE_URL = 'https://tlqjdcjarytxeuvikexb.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRscWpkY2phcnl0eGV1dmlrZXhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE1NDk5MTMsImV4cCI6MjA2NzEyNTkxM30.WwrpU-mRpFnwBy3Y1cCtNbiX9fNr2Ss-dzjA_ZZkcL4';
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Contact form endpoint
 app.post('/api/contact', async (req, res) => {
@@ -28,22 +22,8 @@ app.post('/api/contact', async (req, res) => {
       });
     }
 
-    // Insert into Supabase
-    const { error } = await supabase.from('contact_submissions').insert([
-      {
-        name,
-        email,
-        phone,
-        businessType,
-        requirements,
-        created_at: new Date().toISOString()
-      }
-    ]);
-
-    if (error) {
-      console.error('Supabase insert error:', error);
-      return res.status(500).json({ success: false, message: 'Failed to save submission.' });
-    }
+    // Instead of inserting into Supabase, just log the data
+    console.log('Contact submission:', { name, email, phone, businessType, requirements, created_at: new Date().toISOString() });
 
     res.status(200).json({ success: true, message: 'Form submitted successfully!' });
   } catch (error) {

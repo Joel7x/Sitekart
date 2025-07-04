@@ -982,34 +982,21 @@ export function MainSite() {
                 SiteKart
               </span>
             </div>
-            {/* Spacer to push dock to the far right */}
+            {/* Spacer to push icons to the far right */}
             <div className="flex-1 hidden md:block" />
-            <div className="absolute right-0 top-0 md:static md:ml-auto">
-              <AnimatedDock
-                className="my-4 md:my-0"
-                items={[
-                  {
-                    link: "https://www.linkedin.com/in/joel-jimmy-27391a289/",
-                    target: "_blank",
-                    Icon: <Linkedin size={22} />,
-                  },
-                  {
-                    link: "https://wa.me/917447665524",
-                    target: "_blank",
-                    Icon: <MessageCircle size={22} />,
-                  },
-                  {
-                    link: "https://mail.google.com/mail/?view=cm&to=sitekart28@gmail.com&su=SiteKart%20Inquiry",
-                    target: "_blank",
-                    Icon: <Mail size={22} />,
-                  },
-                  {
-                    link: "https://www.instagram.com/_joel.46_?igsh=MXEydDVkdTk2b2lubQ%3D%3D&utm_source=qr",
-                    target: "_blank",
-                    Icon: <Instagram size={22} />,
-                  },
-                ]}
-              />
+            <div className="flex flex-row gap-4 items-center">
+              <a href="https://www.linkedin.com/in/joel-jimmy-27391a289/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <Linkedin size={22} className="text-blue-400 hover:text-blue-600 transition-colors" />
+              </a>
+              <a href="https://wa.me/917447665524" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+                <MessageCircle size={22} className="text-green-400 hover:text-green-600 transition-colors" />
+              </a>
+              <a href="https://mail.google.com/mail/?view=cm&to=sitekart28@gmail.com&su=SiteKart%20Inquiry" target="_blank" rel="noopener noreferrer" aria-label="Email">
+                <Mail size={22} className="text-red-400 hover:text-red-600 transition-colors" />
+              </a>
+              <a href="https://www.instagram.com/_joel.46_?igsh=MXEydDVkdTk2b2lubQ%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <Instagram size={22} className="text-pink-400 hover:text-pink-600 transition-colors" />
+              </a>
             </div>
           </div>
           {/* Quick Links */}
